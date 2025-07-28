@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robot Arm Control Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f0f4f7;
+    }
+    h2 {
+      text-align: center;
+    }
+    .slider-container {
+      margin-bottom: 10px;
+    }
+    .sliders label {
+      display: inline-block;
+      width: 70px;
+    }
+    input[type="range"] {
+      width: 200px;
+    }
+    .buttons {
+      margin-top: 15px;
+    }
+    table {
+      width: 100%;
+      margin-top: 25px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <h2>Robot Arm Control Panel</h2>
+
+  <form action="data.php" method="post">
+
+  <div class="sliders">
+    <div class="slider-container">
+      <label>Motor 1:</label>
+      <input type="range" id="motor1" name="motor1" min="0" max="180" value="90" oninput="updateValue(this)">
+      <span id="val1">90</span>
+    </div>
+    <div class="slider-container">
+      <label>Motor 2:</label>
+      <input type="range" id="motor2" name="motor2" min="0" max="180" value="90" oninput="updateValue(this)">
+      <span id="val2">90</span>
+    </div>
+    <div class="slider-container">
+      <label>Motor 3:</label>
+      <input type="range" id="motor3" name="motor3" min="0" max="180" value="90" oninput="updateValue(this)">
+      <span id="val3">90</span>
+    </div>
+    <div class="slider-container">
+      <label>Motor 4:</label>
+      <input type="range" id="motor4" name="motor4" min="0" max="180" value="90" oninput="updateValue(this)">
+      <span id="val4">90</span>
+    </div>
+    <div class="slider-container">
+      <label>Motor 5:</label>
+      <input type="range" id="motor5" name="motor5" min="0" max="180" value="90" oninput="updateValue(this)">
+      <span id="val5">90</span>
+    </div>
+    <div class="slider-container">
+      <label>Motor 6:</label>
+      <input type="range" id="motor6"name="motor6" min="0" max="180" value="90" oninput="updateValue(this)">
+      <span id="val6">90</span>
+    </div>
+    <input type="submit" value="save pos">
+</form>
+  </div>
+
+
+
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Motor 1</th>
+        <th>Motor 2</th>
+        <th>Motor 3</th>
+        <th>Motor 4</th>
+        <th>Motor 5</th>
+        <th>Motor 6</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="poseTable">
+      <!-- Poses will be loaded here from the database -->
+    </tbody>
+  </table>
+
+  <script>
+    function updateValue(input) {
+      document.getElementById('val' + input.id.replace('motor', '')).textContent = input.value;
+    }
+
+    function reset() {
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById('motor' + i).value = 90;
+        document.getElementById('val' + i).textContent = 90;
+      }
+    }
+
+    function savePose() {
+      // send data to save_pose.php
+      let motors = [];
+      for (let i = 1; i <= 6; i++) {
+        motors.push(document.getElementById('motor' + i).value);
+      }
+
+      fetch('save_pose.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({motors: motors})
+      }).then(response => response.json())
+        .then(data => {
+          alert("Pose saved!");
+          // Optional: reload table
+        });
+    }
+
+    function runPose() {
+      fetch('get_run_pose.php')
+        .then(response => response.json())
+        .then(data => {
+          alert("Running pose...");
+          // Set sliders if needed
+        });
+    }
+  </script>
+</body>
+</html>
